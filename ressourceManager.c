@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "ressourceManager.h"
@@ -12,9 +13,12 @@ RessourceManager* create_rm(size_t n) {
     for(int i = 0; i < n; i++) {
         rm->handles[i] = malloc(sizeof(Object));                // handle prends taille struct objet
         rm->handles[i]->val = i;                                        // val = i comme ca c'est un peu comme l'id
-        rm->handles[i]->next = (i < n-1) ? rm->handles[i+1] : NULL;     // le handle pointe vers le suivant, mais a la fin il pointe vers NULL
         rm->handles[i]->alt = NULL;                                     // pointe vers NULL
         rm->handles[i]->meta = NULL;                                    // pointe vers NULL
+    }
+
+    for (size_t i = 0; i < n - 1; i++) {
+        rm->handles[i]->next = rm->handles[i+1];
     }
     return rm;
 }
@@ -28,5 +32,17 @@ void free_rm(RessourceManager *rm) {
     }
     free(rm->handles);
     free(rm);
+
+}
+
+uint64_t traverse_next(RessourceManager *rm) {  // en gros c'est pour traverser tout les pointeurs jusqu'a la fin
+    Object *current = rm->handles[0];
+    uint64_t sum = 0;
+
+    while (current != NULL) {
+        sum += current->val;    // somme de toutes les valeurs 
+        current = current->next;    // aller a l'objet suivant
+    }
+    return sum;
 
 }
