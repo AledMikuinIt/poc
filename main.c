@@ -31,6 +31,17 @@ RessourceManager* create_rm(size_t n) {
     return rm;
 }
 
+void free_rm(RessourceManager *rm) {
+
+    // Libération de mémoire 
+    for(int i = 0; i < rm->num_objects; i++) {
+        free(rm->handles[i]);
+    }
+    free(rm->handles);
+    free(rm);
+
+}
+
 int main() {
 
     RessourceManager *t = create_rm(10);
@@ -41,13 +52,9 @@ int main() {
         printf("%u\n", t->handles[i]->val);
     }
     
-    // Libération de mémoire 
-    for(int i = 0; i < t->num_objects; i++) {
-        free(t->handles[i]);
-    }
-    free(t->handles);
-    free(t);
 
+    // Free
+    free_rm(t);
 
     return 0;
 }
