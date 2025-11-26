@@ -2,6 +2,7 @@
 #define RESSOURCEMANAGER_H
 
 #include <stddef.h>
+#include <stdint.h>
 
 typedef struct Object {
     struct Object *next;    // pointeur principal
@@ -18,5 +19,6 @@ typedef struct RessourceManager {
 
 RessourceManager* create_rm(size_t n);
 void free_rm(RessourceManager *rm);
+uint64_t traverse_next(RessourceManager *rm);
 
 #endif
