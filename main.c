@@ -41,7 +41,12 @@ int main() {
         printf("%u\n", t->handles[i]->val);
     }
     
-    
+    // Libération de mémoire 
+    for(int i = 0; i < t->num_objects; i++) {
+        free(t->handles[i]);
+    }
+    free(t->handles);
+    free(t);
 
 
     return 0;
