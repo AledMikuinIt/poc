@@ -17,7 +17,8 @@ typedef struct RessourceManager {
     size_t num_objects; 
 } RessourceManager;
 
-RessourceManager* create_rm(size_t n);
+RessourceManager* create_linear_rm(size_t n);
+RessourceManager* create_dispersed_rm(size_t n);
 void free_rm(RessourceManager *rm);
 uint64_t traverse_next(RessourceManager *rm);
 
