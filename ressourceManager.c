@@ -4,14 +4,18 @@
 #include "ressourceManager.h"
 
 
-RessourceManager* create_rm(size_t n) {
-    RessourceManager* rm = malloc(sizeof(RessourceManager));    // on crée un tableau de la taille de la struct
+RessourceManager* create_linear_rm(size_t n) {
+    RessourceManager *rm = malloc(sizeof(RessourceManager));    // on crée un tableau de la taille de la struct
     if(!rm) return NULL;
     rm->num_objects = n;                                              // le nombre d'objet souhaité
     rm->handles = malloc(n * sizeof(Object*));                  // les handles ont la taille du nombre de pointeurs de taille des pointeurs Objet
 
     for(int i = 0; i < n; i++) {
         rm->handles[i] = malloc(sizeof(Object));                // handle prends taille struct objet
+        if(!rm->handles[i]) {
+            free_rm(rm);
+            return NULL;
+        }
         rm->handles[i]->val = i;                                        // val = i comme ca c'est un peu comme l'id
         rm->handles[i]->alt = NULL;                                     // pointe vers NULL
         rm->handles[i]->meta = NULL;                                    // pointe vers NULL
@@ -20,6 +24,50 @@ RessourceManager* create_rm(size_t n) {
     for (size_t i = 0; i < n - 1; i++) {
         rm->handles[i]->next = rm->handles[i+1];
     }
+    rm->handles[n-1]->next = NULL;
+    return rm;
+}
+
+
+
+RessourceManager* create_dispersed_rm(size_t n) {
+    RessourceManager *rm = malloc(sizeof(RessourceManager));
+    if(!rm) return NULL;
+
+    rm->num_objects = n;
+    rm->handles = malloc(n * sizeof(Object*));
+
+    for(int i = 0; i < n; i++) {
+        Object *obj;
+        if(posix_memalign((void**)&obj, 4096, sizeof(Object)) != 0) {
+            free_rm(rm);
+            return NULL;
+        }
+        rm->handles[i] = obj;
+        if(!rm->handles[i]) {
+            free_rm(rm);
+            return NULL;
+        }
+
+
+        rm->handles[i]->val = i;
+        rm->handles[i]->alt = NULL;
+        rm->handles[i]->meta = NULL;
+    }
+
+    for (size_t i = n - 1; i > 0; i--) {
+        size_t j = rand() % (i + 1);    // algo Fisher-Yates
+        Object *tmp = rm->handles[i];   // pour faire un swap
+        rm->handles[i] = rm->handles[j];
+        rm->handles[j] = tmp;
+    }
+
+    for (size_t i = 0; i < n - 1; i++) {
+        rm->handles[i]->next = rm->handles[i+1];
+    }
+    rm->handles[n-1]->next = NULL;
+
+
     return rm;
 }
 
